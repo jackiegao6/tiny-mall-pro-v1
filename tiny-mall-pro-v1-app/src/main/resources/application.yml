@@ -1,0 +1,5 @@
+spring:
+  config:
+    name: tiny-mall-pro-v1-app
+  profiles:
+    active: dev
