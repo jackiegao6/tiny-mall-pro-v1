@@ -1,8 +1,8 @@
 package com.gzc.test;
 
 import com.alibaba.fastjson2.JSON;
-import com.gzc.domain.order.model.entity.req.ShopCartEntity;
-import com.gzc.domain.order.service.pay.IPayOrderService;
+import com.gzc.domain.order.model.entity.ShopCartEntity;
+import com.gzc.domain.order.service.IPayOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Slf4j
-public class PayOrderServiceTest {
+public class PayOrderEntityServiceTest {
     @Resource
     private IPayOrderService payOrderService;
 

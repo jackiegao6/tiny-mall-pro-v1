@@ -17,7 +17,7 @@ spring:
   datasource:
     username: root
     password: 123456
-    url: jdbc:mysql://127.0.0.1:13306/s-pay-mall?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=true
+    url: jdbc:mysql://127.0.0.1:13306/s-pay-mall?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&useSSL=true
     driver-class-name: com.mysql.cj.jdbc.Driver
   hikari:
     pool-name: Retail_HikariCP
@@ -43,6 +43,17 @@ weixin:
     app-id: wx428512269871be01
     app-secret: acee42440c5432ca93bbc1807337780c
     template-id: YuxN3Li0xZqaZ7TyoNzjx7R5tmW6nsJ9-pG2JWlesuA
+
+
+# 支付宝支付 - 沙箱 https://opendocs.alipay.com/common/02kkv7
+alipay:
+  enabled: true
+  app_id: 2021000148699605
+  merchant_private_key: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCutvYiOD+6G2BVUWUOuSlYQ4a0BH4qd8Lcd0raR4Czw6i+IDsc2LSdZsgXeF5tyHeDt7czjDfX981eOC+pr06qbSS33MtpfHCVNZi8mJaSvH0VTanu628JNpkEXPi34eMe7fGYbNk5NuGy1C9urc+3grSHBZh4GTDe6L206bcf00bb9Zn0JzvOrZmLYVTo2wz8+leysKENI5M502xgdv0RyfyIkMsZnoUN00a+LWth75Y+gsOzd7i8PaLlioL6WCiqvbHjeeUpUNVxMsuNh/HG6gPtr3Evq2XYv/kHMxUVZ/l9OP1dx/23n5fumzpYh9CUUfbaMv7RrHSf+llB6rYTAgMBAAECggEAVRcKfNQERXF701GW9Dq9ph0NB7OAdtJo9tKqg/B7ABH0ptQvtfbc0CP0o2meI72UZ3QcJ2DM+cPYI2Ed5XhZyarqTRmdf7x5YFIAFyoBe2mNScjPUGsdYtFSaMuW3oeHA9NC7Mdma/UMqvmoODEyjt97aJ8TCLrMEGQtsGR7KWX/Uwm8ki7N1wWSSxhRNJ+8+Tdl+KGhrfbi2I5a6qYqpuRk+5vrMJWy7d2sy/HXf+/OOKEahlcSngyCOsdYhDMEmh+C7hr+iBawotoRFw1zl2m2CQL/phqrmTNa9FmMvgUJFn4lMxwPIHN/WdlKUV2LFsRhVJ/qwdOjpp94HACnEQKBgQDrlVIuzW+EVTlNtJwqO1Iy+Ef2BY3X+9YSKm7l+7XWD/MGYLx9E3YWBtLxjiVpafRAJdUcICZLA6Jeu1v8CUo1OEkD7Ln7tF9EeEMcKFlZEe8OF0SyOuDdf5p9cowEf4/h8cHa1zvc4SNtTtc2FG20fGy/pLk+LkUqPCbCFc54JwKBgQC92zPbFjNH+V7rQAbqssnaedNy41/BUq6HwPVEog4PHQ2VH3b0htUi2gRm4k6Xz3evicHr2dJsaazcct4N9peoTSjH11uaD4m59gsRWWtnNpT9zd/z9pXO0V3qAo/svKY6MoYKHfMDlz74pS60aHv9KeG3yUzoEcNazELcnlU6NQKBgGYEN56E3/HSZgo8WBQBtErWMXNcXFxXdhBPx85X/hpAteDhKz6OmuhW9CoegBzyAQ92Up7nXS3G2R1kzSSLcVMymIvWi4NwTID+AzHCV0628WqMsPbtgErq4x/H5tJb2xbg9i2qXwX7iLfhGFkW55rs9rrWvlErAFCV08LgZpSpAoGAbatOxBKJ4tyQ0PG2TSKj6TkQRMBFEuZQ/QggZdn6pw5QR0DatRuhyLUJb+jwH09vwo2f4D5+B7Pvb5RG4uf76PNRSEcFmfO5yhrvf8EYgpGL9SRUZpedJ8/XIRMD0muS1fFTbkqokv1uGbFJTltArBfiVAjLDQ8durhdMxWfA7UCgYEAlxU3OC+3B6QSAQBzXtcnf2r9p/KCN20aSL/HrnHL38A9P2p3t1pZCbrKdjbhyOZN5HaODPrxn0/wDhFV9icYFF2p+jFHpAgLkqwpQihPNAYqSFP80YEtibtopLjG8yeqFTUxjjRlJVnV/rZiAjIdxExI0+0YUciDnKQuzTh86Cw=
+  alipay_public_key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu+q0f+zJ33m+TyN8GXI18wwaxY325Wl6iXA6/eizuj0DL+t81Nu7hou621a1/BVKq55SP3CPnrpu/r9YP7sMunxQRg9FDKddrVfUcz6OLsO96diNzSn9/OpPC9ibX34Q1YNoFAowNo5AnaVmULnnds+rarTX4g1lYrq/lsTmns9uBXZvS0/THsWFbIEnFJi2Mdnbp+9tes2KrTm1tZwsCZo+1zKPRyXafx1pSgIAd2AH3lPSyhFaSSIyPzO8eT1A3bGltpH8TFmqpCVd6xaeO3FLsjRNg9zQ0CQKd8DI06PPIajWmHZ1Z+Qh0vVe4xAAhGGnxxZssaYT9OMuyVomZwIDAQAB
+  notify_url: http://564ce943.r32.cpolar.top/api/v1/alipay/alipay_notify_url
+  return_url: https://baidu.com
+  gatewayUrl: https://openapi-sandbox.dl.alipaydev.com/gateway.do
 
 
 # 日志

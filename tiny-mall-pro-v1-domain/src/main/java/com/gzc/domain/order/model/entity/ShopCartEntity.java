@@ -1,4 +1,4 @@
-package com.gzc.domain.order.model.entity.req;
+package com.gzc.domain.order.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

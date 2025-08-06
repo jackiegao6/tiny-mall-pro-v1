@@ -10,6 +10,11 @@
     <artifactId>tiny-mall-pro-v1-domain</artifactId>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
@@ -47,6 +52,10 @@
         <dependency>
             <groupId>com.gzc</groupId>
             <artifactId>tiny-mall-pro-v1-types</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.gzc</groupId>
+            <artifactId>tiny-mall-pro-v1-api</artifactId>
         </dependency>
     </dependencies>
 
