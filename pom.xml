@@ -54,6 +54,12 @@
     <dependencyManagement>
         <dependencies>
 
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-amqp</artifactId>
+                <version>3.2.0</version>
+            </dependency>
+
             <!-- 支付宝沙箱支付对接文档：https://opendocs.alipay.com/common/02kkv7 -->
             <dependency>
                 <groupId>com.alipay.sdk</groupId>
