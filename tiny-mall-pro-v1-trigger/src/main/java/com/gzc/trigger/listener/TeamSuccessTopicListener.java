@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TeamSuccessTopicListener {
 
-
     @RabbitListener(
             bindings = @QueueBinding(
                     value = @Queue(value = "${spring.rabbitmq.config.consumer.topic_team_success.queue}"),
