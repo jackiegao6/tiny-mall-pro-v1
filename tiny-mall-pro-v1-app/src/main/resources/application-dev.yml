@@ -1,6 +1,16 @@
 server:
   port: 8090
 
+app:
+  config:
+    api-version: v1
+    cross-origin: '*'
+    group-buy-market:
+      api-url: http://127.0.0.1:8091
+      notify-url: http://127.0.0.1:8090/api/v1/test/group_buy_notify
+    weixin:
+      api-url: https://api.weixin.qq.com
+
 # 线程池配置
 thread:
   pool:

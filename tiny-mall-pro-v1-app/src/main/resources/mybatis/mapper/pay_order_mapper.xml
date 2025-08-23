@@ -13,28 +13,77 @@
         <result column="status" property="status"/>
         <result column="pay_url" property="payUrl"/>
         <result column="pay_time" property="payTime"/>
+        <result column="market_type" property="marketType"/>
+        <result column="market_deduction_amount" property="marketDeductionAmount"/>
+        <result column="current_price" property="currentPrice"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <insert id="insert" parameterType="com.gzc.infrastructure.dao.po.PayOrder">
-        insert into pay_order(user_id, product_id, order_id, order_time,
-                              status, create_time, update_time)
-        values(#{userId}, #{productId}, #{orderId}, #{orderTime},
-               #{status}, now(), now())
+    <insert id="insert" parameterType="cn.bugstack.infrastructure.dao.po.PayOrder">
+        insert into pay_order(
+            user_id, product_id, product_name, order_id, order_time,
+            total_amount, status, market_type, market_deduction_amount, current_price, create_time, update_time)
+        values(
+                  #{userId}, #{productId}, #{productName}, #{orderId}, #{orderTime},
+                  #{totalAmount}, #{status}, #{marketType}, #{marketDeductionAmount}, #{currentPrice}, now(), now())
     </insert>
 
-    <select id="queryUnPayOrder" parameterType="com.gzc.infrastructure.dao.po.PayOrder" resultMap="dataMap">
-        select product_id, product_name, order_id, order_time, total_amount, status, pay_url
+    <select id="queryUnPayOrder" parameterType="cn.bugstack.infrastructure.dao.po.PayOrder" resultMap="dataMap">
+        select product_id, product_name, order_id, order_time, total_amount, status, pay_url, market_type, market_deduction_amount, current_price
         from pay_order
         where user_id = #{userId} and product_id = #{productId}
         order by id desc
-        limit 1
+            limit 1
     </select>
 
-    <update id="updateOrderPayInfo" parameterType="com.gzc.infrastructure.dao.po.PayOrder">
-        update pay_order
-        set pay_url = #{payUrl}, status = #{status}
+    <update id="updateOrderPayInfo" parameterType="cn.bugstack.infrastructure.dao.po.PayOrder">
+        update pay_order set pay_url = #{payUrl}, status = #{status},
+                             market_type = #{marketType}, market_deduction_amount = #{marketDeductionAmount}, current_price = #{currentPrice},
+                             update_time = now()
+        where order_id = #{orderId}
+    </update>
+
+    <update id="changeOrderPaySuccess" parameterType="cn.bugstack.infrastructure.dao.po.PayOrder">
+        update pay_order set status = #{status}, pay_time = now(), update_time = now()
+        where order_id = #{orderId}
+    </update>
+
+    <update id="changeOrderClose" parameterType="java.lang.String">
+        update pay_order set status = 'CLOSE', pay_time = now(), update_time = now()
+        where order_id = #{orderId}
+    </update>
+
+    <select id="queryTimeoutCloseOrderList" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT order_id as orderId FROM pay_order
+        WHERE status = 'PAY_WAIT' AND NOW() >= order_time + INTERVAL 30 MINUTE
+        ORDER BY id ASC
+            LIMIT 50
+    </select>
+
+    <select id="queryNoPayNotifyOrder" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT order_id as orderId FROM pay_order
+        WHERE status = 'PAY_WAIT' AND NOW() >= order_time + INTERVAL 1 MINUTE
+        ORDER BY id ASC
+            LIMIT 10
+    </select>
+
+    <update id="changeOrderMarketSettlement" parameterType="java.util.List">
+        update pay_order set status = 'MARKET', update_time = now()
+        where order_id in
+        <foreach item="orderId" collection="outTradeNoList" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </update>
+
+    <select id="queryOrderByOrderId" parameterType="java.lang.String" resultMap="dataMap">
+        select user_id, product_id, product_name, order_id, order_time, total_amount, status, pay_url, market_type, market_deduction_amount, current_price
+        from pay_order
+        where order_id = #{orderId}
+    </select>
+
+    <update id="changeOrderDealDone" parameterType="java.lang.String">
+        update pay_order set status = 'DEAL_DONE', update_time = now()
         where order_id = #{orderId}
     </update>
 
