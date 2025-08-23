@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * 本地订单实体对象
+ */
 @Data
 @Builder
 @AllArgsConstructor

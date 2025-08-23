@@ -7,7 +7,7 @@ import com.gzc.domain.order.model.entity.PayOrderEntity;
 public interface IPayOrderService {
 
     /**
-     * 调用阿里收银台获得支付订单
+     * 调用阿里收银台 获得支付二维码
      *
      * @param shopCartEntity 购物车实体对象
      * @return 支付订单实体
