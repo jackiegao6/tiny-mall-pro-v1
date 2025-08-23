@@ -28,6 +28,6 @@ public class ProductEntity {
     /**
      * 商品价格
      */
-    private BigDecimal price;
+    private BigDecimal originalPrice;
 
 }

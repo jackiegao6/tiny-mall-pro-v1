@@ -17,8 +17,6 @@ import java.util.Date;
 @NoArgsConstructor
 public class CreateOrderAggregate {
 
-
-
     private ProductEntity productEntity;
 
     private OrderEntity orderEntity;

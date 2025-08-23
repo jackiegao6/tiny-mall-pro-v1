@@ -17,10 +17,19 @@ public class OrderEntity {
     private String userId;
     private String productId;
     private String productName;
+
     private String orderId;
     private Date orderTime;
     private BigDecimal totalAmount;
     private OrderStatusVO orderStatusVO;
     private String payUrl;
+
+    // 营销类型；0无营销、1拼团营销
+    private Integer marketType;
+    // 营销金额；优惠金额
+    private BigDecimal deductionPrice;
+    // 支付金额
+    private BigDecimal currentPrice;
+
 
 }

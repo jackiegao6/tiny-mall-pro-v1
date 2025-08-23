@@ -27,7 +27,7 @@ public class PayOrder {
     private String orderId;
     // 下单时间
     private Date orderTime;
-    // 订单金额
+    // 订单金额 todo 现在假设 只能买一个
     private BigDecimal totalAmount;
     // 订单状态；create-创建完成、pay_wait-等待支付、pay_success-支付成功、deal_done-交易完成、close-订单关单
     private String status;
@@ -37,8 +37,8 @@ public class PayOrder {
     private Date payTime;
     // 营销类型；0无营销、1拼团营销
     private Integer marketType;
-    // 营销金额；优惠金额
-    private BigDecimal marketDeductionAmount;
+    // 优惠金额
+    private BigDecimal deductionPrice;
     // 支付金额
     private BigDecimal currentPrice;
     // 创建时间

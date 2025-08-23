@@ -14,7 +14,7 @@
         <result column="pay_url" property="payUrl"/>
         <result column="pay_time" property="payTime"/>
         <result column="market_type" property="marketType"/>
-        <result column="market_deduction_amount" property="marketDeductionAmount"/>
+        <result column="deduction_price" property="deductionPrice"/>
         <result column="current_price" property="currentPrice"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
@@ -23,14 +23,14 @@
     <insert id="insert" parameterType="cn.bugstack.infrastructure.dao.po.PayOrder">
         insert into pay_order(
             user_id, product_id, product_name, order_id, order_time,
-            total_amount, status, market_type, market_deduction_amount, current_price, create_time, update_time)
+            total_amount, status, market_type, deduction_price, current_price, create_time, update_time)
         values(
                   #{userId}, #{productId}, #{productName}, #{orderId}, #{orderTime},
-                  #{totalAmount}, #{status}, #{marketType}, #{marketDeductionAmount}, #{currentPrice}, now(), now())
+                  #{totalAmount}, #{status}, #{marketType}, #{deductionPrice}, #{currentPrice}, now(), now())
     </insert>
 
     <select id="queryUnPayOrder" parameterType="cn.bugstack.infrastructure.dao.po.PayOrder" resultMap="dataMap">
-        select product_id, product_name, order_id, order_time, total_amount, status, pay_url, market_type, market_deduction_amount, current_price
+        select product_id, product_name, order_id, order_time, total_amount, status, pay_url, market_type, deduction_price, current_price
         from pay_order
         where user_id = #{userId} and product_id = #{productId}
         order by id desc
@@ -39,7 +39,7 @@
 
     <update id="updateOrderPayInfo" parameterType="cn.bugstack.infrastructure.dao.po.PayOrder">
         update pay_order set pay_url = #{payUrl}, status = #{status},
-                             market_type = #{marketType}, market_deduction_amount = #{marketDeductionAmount}, current_price = #{currentPrice},
+                             market_type = #{marketType}, deduction_price = #{deductionPrice}, current_price = #{currentPrice},
                              update_time = now()
         where order_id = #{orderId}
     </update>
@@ -77,7 +77,7 @@
     </update>
 
     <select id="queryOrderByOrderId" parameterType="java.lang.String" resultMap="dataMap">
-        select user_id, product_id, product_name, order_id, order_time, total_amount, status, pay_url, market_type, market_deduction_amount, current_price
+        select user_id, product_id, product_name, order_id, order_time, total_amount, status, pay_url, market_type, deduction_price, current_price
         from pay_order
         where order_id = #{orderId}
     </select>
