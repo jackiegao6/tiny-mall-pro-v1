@@ -21,7 +21,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/v1/alipay/")
+@RequestMapping("/api/v1/alipay")
 public class AliPayController {
 
     @Value("${alipay.alipay_public_key}")
@@ -38,7 +38,7 @@ public class AliPayController {
      * "productId": "100001"
      * }
      */
-    @RequestMapping(value = "create_pay_order", method = RequestMethod.POST)
+    @RequestMapping(value = "/create_pay_order", method = RequestMethod.POST)
     public Response<String> createPayOrder(@RequestBody CreatePayRequestDTO createPayRequestDTO) {
         try {
             String userId = createPayRequestDTO.getUserId();
@@ -67,7 +67,7 @@ public class AliPayController {
     /**
      * http://xfg-studio.natapp1.cc/api/v1/alipay/alipay_notify_url
      */
-    @RequestMapping(value = "alipay_notify_url", method = RequestMethod.POST)
+    @RequestMapping(value = "/alipay_notify_url", method = RequestMethod.POST)
     public String payNotify(HttpServletRequest request) throws AlipayApiException {
         log.info("支付回调，消息接收 {}", request.getParameter("trade_status"));
 

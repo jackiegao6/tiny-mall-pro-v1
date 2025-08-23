@@ -2,6 +2,7 @@ package com.gzc.domain.order.model.aggregate;
 
 import com.gzc.domain.order.model.entity.OrderEntity;
 import com.gzc.domain.order.model.entity.ProductEntity;
+import com.gzc.domain.order.model.entity.ShopCartEntity;
 import com.gzc.domain.order.model.valobj.OrderStatusVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,14 +22,16 @@ public class CreateOrderAggregate {
 
     private OrderEntity orderEntity;
 
-    public static OrderEntity buildOrderEntity(String userId, String productId, String productName){
+    public static OrderEntity buildOrderEntity(ShopCartEntity shopCartEntity, String productName){
         return OrderEntity.builder()
-                .userId(userId)
-                .productId(productId)
+                .userId(shopCartEntity.getUserId())
+                .productId(shopCartEntity.getProductId())
                 .productName(productName)
-                .orderId(RandomStringUtils.randomNumeric(14))
+                .orderId(RandomStringUtils.randomNumeric(12))
                 .orderTime(new Date())
                 .orderStatusVO(OrderStatusVO.CREATE)
+
+                .marketType(shopCartEntity.getMarketTypeVO().getCode())
                 .build();
     }
 

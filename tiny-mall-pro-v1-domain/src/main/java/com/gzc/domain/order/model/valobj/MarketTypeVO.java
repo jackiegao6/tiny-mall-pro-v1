@@ -1,7 +1,9 @@
 package com.gzc.domain.order.model.valobj;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
 @AllArgsConstructor
 public enum MarketTypeVO {
 

@@ -21,20 +21,49 @@ public class PayOrderRepository implements IPayOrderRepository {
 
     private final IPayOrderDao payOrderDao;
 
+    /**
+     * 根据用户id 和 商品id 查询未支付订单
+     */
+    @Override
+    public OrderEntity queryUnPayOrder(ShopCartEntity shopCartEntity) {
+        PayOrder payOrderPOReq = new PayOrder();
+        payOrderPOReq.setUserId(shopCartEntity.getUserId());
+        payOrderPOReq.setProductId(shopCartEntity.getProductId());
+
+        PayOrder payOrderPORes = payOrderDao.queryUnPayOrder(payOrderPOReq);
+        if (null == payOrderPORes) return null;
+
+        return OrderEntity.builder()
+                .productId(payOrderPORes.getProductId())
+                .productName(payOrderPORes.getProductName())
+                .orderId(payOrderPORes.getOrderId())
+                .orderStatusVO(OrderStatusVO.valueOf(payOrderPORes.getStatus()))
+                .orderTime(payOrderPORes.getOrderTime())
+                .totalAmount(payOrderPORes.getTotalAmount())
+                .payUrl(payOrderPORes.getPayUrl())
+
+                .marketType(payOrderPORes.getMarketType())
+                .deductionPrice(payOrderPORes.getDeductionPrice())
+                .currentPrice(payOrderPORes.getCurrentPrice())
+                .build();
+    }
+
     @Override
     public void doSaveOrder(CreateOrderAggregate orderAggregate) {
         ProductEntity productEntity = orderAggregate.getProductEntity();
         OrderEntity orderEntity = orderAggregate.getOrderEntity();
-        String userId = orderEntity.getUserId();
 
         PayOrder order = new PayOrder();
-        order.setUserId(userId);
+        order.setUserId(orderEntity.getUserId());
         order.setProductId(productEntity.getProductId());
         order.setProductName(productEntity.getProductName());
         order.setOrderId(orderEntity.getOrderId());
         order.setOrderTime(orderEntity.getOrderTime());
-        order.setTotalAmount(productEntity.getPrice());
+        order.setTotalAmount(productEntity.getOriginalPrice()); // todo 待修改 总金额
         order.setStatus(orderEntity.getOrderStatusVO().getCode());
+        order.setMarketType(orderEntity.getMarketType());
+        order.setDeductionPrice(orderEntity.getDeductionPrice());
+        order.setCurrentPrice(orderEntity.getCurrentPrice());
 
         payOrderDao.insert(order);
     }
@@ -48,30 +77,6 @@ public class PayOrderRepository implements IPayOrderRepository {
                 .build();
         payOrderDao.updateOrderPayInfo(payOrderReq);
     }
-
-    @Override
-    public OrderEntity queryUnPayOrder(ShopCartEntity shopCartEntity) {
-        // 1. 封装参数
-        PayOrder orderReq = new PayOrder();
-        orderReq.setUserId(shopCartEntity.getUserId());
-        orderReq.setProductId(shopCartEntity.getProductId());
-
-        // 2. 查询到订单
-        PayOrder order = payOrderDao.queryUnPayOrder(orderReq);
-        if (null == order) return null;
-
-        // 3. 返回结果
-        return OrderEntity.builder()
-                .productId(order.getProductId())
-                .productName(order.getProductName())
-                .orderId(order.getOrderId())
-                .orderStatusVO(OrderStatusVO.valueOf(order.getStatus()))
-                .orderTime(order.getOrderTime())
-                .totalAmount(order.getTotalAmount())
-                .payUrl(order.getPayUrl())
-                .build();
-    }
-
 
 
 }

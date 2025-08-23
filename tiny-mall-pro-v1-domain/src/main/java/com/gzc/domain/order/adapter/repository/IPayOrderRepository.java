@@ -7,9 +7,9 @@ import com.gzc.domain.order.model.entity.PayOrderEntity;
 
 public interface IPayOrderRepository {
 
+    OrderEntity queryUnPayOrder(ShopCartEntity shopCartEntity);
+
     void doSaveOrder(CreateOrderAggregate orderAggregate);
 
     void updateOrderPayInfo(PayOrderEntity payOrderEntity);
-
-    OrderEntity queryUnPayOrder(ShopCartEntity shopCartEntity);
 }

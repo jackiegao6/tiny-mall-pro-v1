@@ -10,4 +10,8 @@ public class CreatePayRequestDTO {
     // 产品编号
     private String productId;
 
+    private String teamId;
+    private Long activityId;
+    private Integer marketType = 0;
+
 }
