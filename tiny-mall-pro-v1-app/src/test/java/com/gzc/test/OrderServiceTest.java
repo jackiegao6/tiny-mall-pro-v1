@@ -24,7 +24,7 @@ public class OrderServiceTest {
     @Test
     public void test_OrderStatus_CREATE_PAY_WAIT() throws Exception {
         ShopCartEntity shopCartEntity = new ShopCartEntity();
-        shopCartEntity.setUserId("gzc_1106");
+        shopCartEntity.setUserId("gg");
         shopCartEntity.setProductId("9890001");
         shopCartEntity.setTeamId(null);
         shopCartEntity.setActivityId(100123L);

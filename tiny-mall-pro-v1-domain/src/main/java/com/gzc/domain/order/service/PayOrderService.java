@@ -85,10 +85,10 @@ public class PayOrderService extends AbstractPayOrderService{
         OrderEntity orderEntity = payOrderRepository.queryOrderByOrderId(orderId);
         if (null == orderEntity) return;
 
+        payOrderRepository.changeOrder2PaySuccess(orderId, payTime);
         if (MarketTypeVO.GROUP_BUY_MARKET.getCode().equals(orderEntity.getMarketType())){
             groupBuyMarketPort.settleOrder(orderEntity.getUserId(), orderId, payTime);
         }
-        payOrderRepository.changeOrder2PaySuccess(orderId, payTime);
     }
 
     @Override
