@@ -1,11 +1,14 @@
 package com.gzc.trigger.http;
 
+import com.gzc.domain.weixin.service.login.ILoginService;
 import com.gzc.types.sdk.weixin.MessageTextEntity;
 import com.gzc.types.sdk.weixin.SignatureUtil;
 import com.gzc.types.sdk.weixin.XmlUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 @Slf4j
 @RestController()
@@ -17,6 +20,8 @@ public class WeixinPortalController {
     private String originalid;
     @Value("${weixin.config.token}")
     private String token;
+    @Resource
+    private ILoginService loginService;
 
     /**
      * 给微信官方验签使用
@@ -44,20 +49,24 @@ public class WeixinPortalController {
      */
     @PostMapping(value = "/receive", produces = "application/xml; charset=UTF-8")
     public String post(@RequestBody String requestBody,
-                       @RequestParam("signature") String signature,
-                       @RequestParam("timestamp") String timestamp,
-                       @RequestParam("nonce") String nonce,
-                       @RequestParam("openid") String openid,
-                       @RequestParam(name = "encrypt_type", required = false) String encType,
-                       @RequestParam(name = "msg_signature", required = false) String msgSignature) {
+                     @RequestParam("signature") String signature,
+                     @RequestParam("timestamp") String timestamp,
+                     @RequestParam("nonce") String nonce,
+                     @RequestParam("openid") String openid,
+                     @RequestParam(name = "encrypt_type", required = false) String encType,
+                     @RequestParam(name = "msg_signature", required = false) String msgSignature) {
         try {
             // 消息转换
             MessageTextEntity message = XmlUtil.xmlToBean(requestBody, MessageTextEntity.class);
-            String responseMsg = buildMessageTextEntity(openid, "你好，" + message.getContent());
-            return responseMsg;
+            if ("event".equals(message.getMsgType()) && "SCAN".equals(message.getEvent())) {
+                loginService.saveLoginState(message.getTicket(), openid);
+                return null;
+            }else {
+                return buildMessageTextEntity(openid, "你好，" + message.getContent());
+            }
         } catch (Exception e) {
-            log.error("转换用户消息体失败 requestBody: {}", requestBody, e);
-            return "";
+            // 内部bug msgId msgID 大小写未统一 在这里忽略掉
+            return null;
         }
     }
 

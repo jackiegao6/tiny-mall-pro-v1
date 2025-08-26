@@ -75,7 +75,9 @@ weixin:
     token: gzc1106
     app-id: wx428512269871be01
     app-secret: acee42440c5432ca93bbc1807337780c
-    template-id: YuxN3Li0xZqaZ7TyoNzjx7R5tmW6nsJ9-pG2JWlesuA
+    template:
+      template-id: JY2vnuKYYsJQV283j3S9e8JXCoZmgnow6IEm2rMqnZE
+      template-notify-url: http://7d7a91e3.r32.cpolar.top/api/v1/weixin/template/send-notify
 
 
 # 支付宝支付 - 沙箱 https://opendocs.alipay.com/common/02kkv7

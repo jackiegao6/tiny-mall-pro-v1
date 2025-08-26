@@ -10,10 +10,17 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class GuavaConfig {
 
-    @Bean(name = "cache")
-    public Cache<String, String> cache() {
+    @Bean(name = "weixinAccessTokenCache")
+    public Cache<String, String> weixinAccessTokenCache() {
         return CacheBuilder.newBuilder()
-                .expireAfterWrite(3, TimeUnit.SECONDS)
+                .expireAfterWrite(10, TimeUnit.MINUTES)
+                .build();
+    }
+
+    @Bean(name = "openidTokenCache")
+    public Cache<String, String> openidTokenCache() {
+        return CacheBuilder.newBuilder()
+                .expireAfterWrite(30, TimeUnit.MINUTES)
                 .build();
     }
 
