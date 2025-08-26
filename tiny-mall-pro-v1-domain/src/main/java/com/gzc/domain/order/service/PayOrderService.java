@@ -2,7 +2,6 @@ package com.gzc.domain.order.service;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson2.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
@@ -34,13 +33,11 @@ public class PayOrderService extends AbstractPayOrderService{
     private String returnUrl;
     private final AlipayClient alipayClient;
     private final IGroupBuyMarketPort groupBuyMarketPort;
-    private final EventBus eventBus;
 
     public PayOrderService(IPayOrderRepository payOrderRepository, IProductPort productPort, AlipayClient alipayClient, IGroupBuyMarketPort groupBuyMarketPort, EventBus eventBus) {
         super(payOrderRepository, productPort);
         this.alipayClient = alipayClient;
         this.groupBuyMarketPort = groupBuyMarketPort;
-        this.eventBus = eventBus;
     }
 
     @Override
@@ -85,19 +82,14 @@ public class PayOrderService extends AbstractPayOrderService{
     }
 
     @Override
-    public void changePayOrderSuccess(String orderId, Date payTime) {
+    public void changeOrder2PaySuccess(String orderId, Date payTime) {
         OrderEntity orderEntity = payOrderRepository.queryOrderByOrderId(orderId);
+        if (null == orderEntity) return;
 
         if (MarketTypeVO.GROUP_BUY_MARKET.getCode().equals(orderEntity.getMarketType())){
             groupBuyMarketPort.settleOrder(orderEntity.getUserId(), orderId, payTime);
-            payOrderRepository.changePayOrderSuccess(orderId, payTime);
-        }else {
-            payOrderRepository.changePayOrderSuccess(orderId, payTime);
         }
-
-        // 发送MQ消息
-        eventBus.post(JSON.toJSONString(orderEntity));
-
+        payOrderRepository.changeOrder2PaySuccess(orderId, payTime);
     }
 
     @Override

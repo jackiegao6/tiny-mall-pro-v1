@@ -4,7 +4,6 @@ import com.gzc.domain.order.model.entity.ProductEntity;
 
 public interface IProductPort {
 
-
     ProductEntity queryProductByProductId(String productId);
 
 }

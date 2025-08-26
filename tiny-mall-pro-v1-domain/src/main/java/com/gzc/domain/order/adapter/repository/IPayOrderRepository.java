@@ -18,7 +18,7 @@ public interface IPayOrderRepository {
 
     void updateOrderPayInfo(PayOrderEntity payOrderEntity);
 
-    void changePayOrderSuccess(String orderId, Date orderTime);
+    void changeOrder2PaySuccess(String orderId, Date orderTime);
 
     List<String> queryNoPayNotifyOrder();
 

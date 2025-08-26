@@ -18,7 +18,7 @@ public interface IPayOrderService {
      */
     PayOrderEntity createPayOrder(ShopCartEntity shopCartEntity) throws AlipayApiException;
 
-    void changePayOrderSuccess(String orderId, Date orderTime);
+    void changeOrder2PaySuccess(String orderId, Date payTime);
 
     boolean changeOrderClose(String orderId);
 

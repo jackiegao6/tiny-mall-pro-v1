@@ -14,5 +14,5 @@ import java.util.Date;
 public class SettlementRequestDTO {
     private String userId;
     private String outTradeNo;
-    private Date orderTime;
+    private Date orderTime;// todo 改为payTime
 }

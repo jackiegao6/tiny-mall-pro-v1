@@ -30,7 +30,6 @@ public class GroupBuyMarketPort implements IGroupBuyMarketPort {
 
     private final IGroupBuyMarketApiService groupBuyMarketApiService;
 
-
     @Override
     public MarketPayDiscountEntity lockOrder(String userId, String productId, String teamId, Long activityId, String orderId) {
         LockMarketPayOrderRequestDTO requestDTO = LockMarketPayOrderRequestDTO.builder()
@@ -65,12 +64,12 @@ public class GroupBuyMarketPort implements IGroupBuyMarketPort {
     }
 
     @Override
-    public void settleOrder(String userId, String orderId, Date orderTime) {
+    public void settleOrder(String userId, String orderId, Date payTime) {
 
         SettlementRequestDTO requestDTO = SettlementRequestDTO.builder()
                 .userId(userId)
                 .outTradeNo(orderId)
-                .orderTime(orderTime)
+                .orderTime(payTime)
                 .build();
         Call<Response<SettlementResponseDTO>> call = groupBuyMarketApiService.settleMarketPayOrder(requestDTO);
         try {

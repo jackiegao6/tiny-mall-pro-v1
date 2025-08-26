@@ -1,5 +1,7 @@
 package com.gzc.infrastructure.adapter.repository;
 
+import com.alibaba.fastjson2.JSON;
+import com.google.common.eventbus.EventBus;
 import com.gzc.domain.order.adapter.repository.IPayOrderRepository;
 import com.gzc.domain.order.model.aggregate.CreateOrderAggregate;
 import com.gzc.domain.order.model.entity.OrderEntity;
@@ -23,6 +25,7 @@ import java.util.List;
 public class PayOrderRepository implements IPayOrderRepository {
 
     private final IPayOrderDao payOrderDao;
+    private final EventBus eventBus;
 
     /**
      * 根据用户id 和 商品id 查询未支付订单
@@ -106,11 +109,13 @@ public class PayOrderRepository implements IPayOrderRepository {
      * 接收回调消息，变更数据库状态，之后发送MQ消息
      */
     @Override
-    public void changePayOrderSuccess(String orderId, Date payTime) {
+    public void changeOrder2PaySuccess(String orderId, Date payTime) {
         PayOrder payOrderReq = new PayOrder();
         payOrderReq.setOrderId(orderId);
         payOrderReq.setPayTime(payTime);
         payOrderDao.changeOrder2PaySuccess(payOrderReq);
+
+        eventBus.post(JSON.toJSONString(payOrderReq));
     }
 
     @Override
