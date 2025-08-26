@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController()
 @CrossOrigin("*")
-@RequestMapping("/api/v1/weixin/portal/")
+@RequestMapping("/api/v1/weixin/portal")
 public class WeixinPortalController {
 
     @Value("${weixin.config.originalid}")
@@ -18,15 +18,17 @@ public class WeixinPortalController {
     @Value("${weixin.config.token}")
     private String token;
 
-
-    @GetMapping(value = "receive", produces = "text/plain;charset=utf-8")
+    /**
+     * 给微信官方验签使用
+     */
+    @GetMapping(value = "/receive", produces = "text/plain;charset=utf-8")
     public String validate(@RequestParam(value = "signature", required = false) String signature,
                            @RequestParam(value = "timestamp", required = false) String timestamp,
                            @RequestParam(value = "nonce", required = false) String nonce,
                            @RequestParam(value = "echostr", required = false) String echostr) {
         try {
             boolean check = SignatureUtil.check(token, signature, timestamp, nonce);
-            log.info("微信公众号验签信息完成 check：{}", check);
+            log.info("微信公众号验签信息完成 状态: {}", check);
             if (!check) {
                 return null;
             }
@@ -37,7 +39,10 @@ public class WeixinPortalController {
         }
     }
 
-    @PostMapping(value = "receive", produces = "application/xml; charset=UTF-8")
+    /**
+     * 处理用户发来的消息
+     */
+    @PostMapping(value = "/receive", produces = "application/xml; charset=UTF-8")
     public String post(@RequestBody String requestBody,
                        @RequestParam("signature") String signature,
                        @RequestParam("timestamp") String timestamp,
@@ -48,13 +53,17 @@ public class WeixinPortalController {
         try {
             // 消息转换
             MessageTextEntity message = XmlUtil.xmlToBean(requestBody, MessageTextEntity.class);
-            return buildMessageTextEntity(openid, "你好，" + message.getContent());
+            String responseMsg = buildMessageTextEntity(openid, "你好，" + message.getContent());
+            return responseMsg;
         } catch (Exception e) {
-            log.error("接收微信公众号信息请求{}失败 {}", openid, requestBody, e);
+            log.error("转换用户消息体失败 requestBody: {}", requestBody, e);
             return "";
         }
     }
 
+    /**
+     * 固定的返回消息内容
+     */
     private String buildMessageTextEntity(String openid, String content) {
         MessageTextEntity res = new MessageTextEntity();
         // 公众号分配的ID
