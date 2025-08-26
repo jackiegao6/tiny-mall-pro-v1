@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-// todo spring容器的实现原理
 @Configuration
 @EnableConfigurationProperties(AliPayConfigProperties.class)
 public class AliPayConfig {

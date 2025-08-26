@@ -5,11 +5,25 @@ import com.gzc.domain.order.model.entity.OrderEntity;
 import com.gzc.domain.order.model.entity.ShopCartEntity;
 import com.gzc.domain.order.model.entity.PayOrderEntity;
 
+import java.util.Date;
+import java.util.List;
+
 public interface IPayOrderRepository {
 
     OrderEntity queryUnPayOrder(ShopCartEntity shopCartEntity);
 
     void doSaveOrder(CreateOrderAggregate orderAggregate);
 
+    OrderEntity queryOrderByOrderId(String orderId);
+
     void updateOrderPayInfo(PayOrderEntity payOrderEntity);
+
+    void changePayOrderSuccess(String orderId, Date orderTime);
+
+    List<String> queryNoPayNotifyOrder();
+
+    List<String> queryTimeoutCloseOrderList();
+
+    boolean changeOrderClose(String orderId);
+
 }

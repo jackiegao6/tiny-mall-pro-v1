@@ -29,6 +29,12 @@
                   #{totalAmount}, #{status}, #{marketType}, #{deductionPrice}, #{currentPrice}, now(), now())
     </insert>
 
+    <select id="queryOrderByOrderId" parameterType="java.lang.String" resultMap="dataMap">
+        select user_id, product_id, product_name, order_id, order_time, total_amount, status, pay_url, market_type, deduction_price, current_price
+        from pay_order
+        where order_id = #{orderId}
+    </select>
+
     <select id="queryUnPayOrder" parameterType="com.gzc.infrastructure.dao.po.PayOrder" resultMap="dataMap">
         select product_id, product_name, order_id, order_time, total_amount, status, pay_url, market_type, deduction_price, current_price
         from pay_order
@@ -43,13 +49,18 @@
         where order_id = #{orderId}
     </update>
 
-    <update id="changeOrderPaySuccess" parameterType="com.gzc.infrastructure.dao.po.PayOrder">
-        update pay_order set status = #{status}, pay_time = now(), update_time = now()
+    <update id="changeOrder2PaySuccess" parameterType="com.gzc.infrastructure.dao.po.PayOrder">
+        update pay_order set status = 'PAY_SUCCESS', pay_time = #{payTime}, update_time = now()
         where order_id = #{orderId}
     </update>
 
-    <update id="changeOrderClose" parameterType="java.lang.String">
-        update pay_order set status = 'CLOSE', pay_time = now(), update_time = now()
+    <update id="changeOrder2Close" parameterType="java.lang.String">
+        update pay_order set status = 'CLOSE', update_time = now()
+        where order_id = #{orderId}
+    </update>
+
+    <update id="changeOrder2DealDone" parameterType="java.lang.String">
+        update pay_order set status = 'DEAL_DONE', update_time = now()
         where order_id = #{orderId}
     </update>
 
@@ -75,15 +86,6 @@
         </foreach>
     </update>
 
-    <select id="queryOrderByOrderId" parameterType="java.lang.String" resultMap="dataMap">
-        select user_id, product_id, product_name, order_id, order_time, total_amount, status, pay_url, market_type, deduction_price, current_price
-        from pay_order
-        where order_id = #{orderId}
-    </select>
 
-    <update id="changeOrderDealDone" parameterType="java.lang.String">
-        update pay_order set status = 'DEAL_DONE', update_time = now()
-        where order_id = #{orderId}
-    </update>
 
 </mapper>

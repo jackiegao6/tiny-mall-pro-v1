@@ -5,16 +5,21 @@ import com.gzc.domain.order.adapter.port.IGroupBuyMarketPort;
 import com.gzc.domain.order.model.entity.MarketPayDiscountEntity;
 import com.gzc.infrastructure.gateway.IGroupBuyMarketApiService;
 import com.gzc.infrastructure.gateway.dto.req.LockMarketPayOrderRequestDTO;
+import com.gzc.infrastructure.gateway.dto.req.SettlementRequestDTO;
 import com.gzc.infrastructure.gateway.dto.resp.LockMarketPayOrderResponseDTO;
+import com.gzc.infrastructure.gateway.dto.resp.SettlementResponseDTO;
 import com.gzc.types.exception.AppException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import retrofit2.Call;
 
 import java.io.IOException;
+import java.util.Date;
 
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class GroupBuyMarketPort implements IGroupBuyMarketPort {
@@ -54,7 +59,29 @@ public class GroupBuyMarketPort implements IGroupBuyMarketPort {
                     .build();
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("营销锁单失败{}", userId, e);
         }
+        return null;
+    }
+
+    @Override
+    public void settleOrder(String userId, String orderId, Date orderTime) {
+
+        SettlementRequestDTO requestDTO = SettlementRequestDTO.builder()
+                .userId(userId)
+                .outTradeNo(orderId)
+                .orderTime(orderTime)
+                .build();
+        Call<Response<SettlementResponseDTO>> call = groupBuyMarketApiService.settleMarketPayOrder(requestDTO);
+        try {
+            Response<SettlementResponseDTO> response = call.execute().body();
+            if (null == response) return ;
+            if (!"0".equals(response.getCode())){
+                throw new AppException(response.getCode(), response.getInfo());
+            }
+        } catch (IOException e) {
+            log.error("营销结算失败{}", userId, e);
+        }
+
     }
 }

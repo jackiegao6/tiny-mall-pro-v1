@@ -11,21 +11,21 @@ public interface IPayOrderDao {
 
     void insert(PayOrder payOrder);
 
+    PayOrder queryOrderByOrderId(String orderId);
+
     PayOrder queryUnPayOrder(PayOrder payOrder);
 
     void updateOrderPayInfo(PayOrder payOrder);
 
-    void changeOrderPaySuccess(PayOrder payOrderReq);
+    void changeOrder2PaySuccess(PayOrder payOrderReq);
 
     List<String> queryNoPayNotifyOrder();
 
     List<String> queryTimeoutCloseOrderList();
 
-    boolean changeOrderClose(String orderId);
+    boolean changeOrder2Close(String orderId);
 
     void changeOrderMarketSettlement(@Param("outTradeNoList") List<String> outTradeNoList);
-
-    PayOrder queryOrderByOrderId(String orderId);
 
     void changeOrderDealDone(String orderId);
 

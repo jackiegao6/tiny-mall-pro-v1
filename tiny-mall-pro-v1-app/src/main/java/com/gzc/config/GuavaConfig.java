@@ -2,6 +2,8 @@ package com.gzc.config;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.eventbus.EventBus;
+import com.gzc.listener.OrderPaySuccessListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,6 +17,13 @@ public class GuavaConfig {
         return CacheBuilder.newBuilder()
                 .expireAfterWrite(3, TimeUnit.SECONDS)
                 .build();
+    }
+
+    @Bean(name = "eventBus")
+    public EventBus getEventBus(OrderPaySuccessListener listener){
+        EventBus eventBus = new EventBus();
+        eventBus.register(listener);
+        return eventBus;
     }
 
 }

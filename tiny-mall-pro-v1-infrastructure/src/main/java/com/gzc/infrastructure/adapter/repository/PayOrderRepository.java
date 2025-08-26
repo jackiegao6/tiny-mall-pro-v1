@@ -13,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+import java.util.List;
+
 
 @Repository
 @Slf4j
@@ -78,5 +81,50 @@ public class PayOrderRepository implements IPayOrderRepository {
         payOrderDao.updateOrderPayInfo(payOrderReq);
     }
 
+    @Override
+    public OrderEntity queryOrderByOrderId(String orderId) {
+        PayOrder payOrder = payOrderDao.queryOrderByOrderId(orderId);
 
+        if (null == payOrder) return null;
+        return OrderEntity.builder()
+                .userId(payOrder.getUserId())
+                .productId(payOrder.getProductId())
+                .productName(payOrder.getProductName())
+                .orderId(payOrder.getOrderId())
+                .orderTime(payOrder.getOrderTime())
+                .totalAmount(payOrder.getTotalAmount())
+                .orderStatusVO(OrderStatusVO.valueOf(payOrder.getStatus()))
+                .payUrl(payOrder.getPayUrl())
+                .marketType(payOrder.getMarketType())
+                .deductionPrice(payOrder.getDeductionPrice())
+                .currentPrice(payOrder.getCurrentPrice())
+                .build();
+    }
+
+    /**
+     * 回调方法
+     * 接收回调消息，变更数据库状态，之后发送MQ消息
+     */
+    @Override
+    public void changePayOrderSuccess(String orderId, Date payTime) {
+        PayOrder payOrderReq = new PayOrder();
+        payOrderReq.setOrderId(orderId);
+        payOrderReq.setPayTime(payTime);
+        payOrderDao.changeOrder2PaySuccess(payOrderReq);
+    }
+
+    @Override
+    public List<String> queryNoPayNotifyOrder() {
+        return payOrderDao.queryNoPayNotifyOrder();
+    }
+
+    @Override
+    public List<String> queryTimeoutCloseOrderList() {
+        return payOrderDao.queryTimeoutCloseOrderList();
+    }
+
+    @Override
+    public boolean changeOrderClose(String orderId) {
+        return payOrderDao.changeOrder2Close(orderId);
+    }
 }

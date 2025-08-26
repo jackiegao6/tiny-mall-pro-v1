@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,47 +67,48 @@ public class AliPayController {
 
 
     /**
-     * http://xfg-studio.natapp1.cc/api/v1/alipay/alipay_notify_url
+     * 支付宝 回调调用
+     * 在接收到支付回调消息后，更新订单状态。
      */
     @RequestMapping(value = "/alipay_notify_url", method = RequestMethod.POST)
-    public String payNotify(HttpServletRequest request) throws AlipayApiException {
-        log.info("支付回调，消息接收 {}", request.getParameter("trade_status"));
+    public String payNotify(HttpServletRequest request) throws AlipayApiException, ParseException {
+        try {
+            log.info("支付回调，消息接收 {}", request.getParameter("trade_status"));
 
-        if (!request.getParameter("trade_status").equals("TRADE_SUCCESS")) {
+            if (request.getParameter("trade_status").equals("TRADE_SUCCESS")) {
+                Map<String, String> params = new HashMap<>();
+                Map<String, String[]> requestParams = request.getParameterMap();
+                for (String name : requestParams.keySet()) {
+                    params.put(name, request.getParameter(name));
+                }
+
+                String tradeNo = params.get("out_trade_no");
+                String gmtPayment = params.get("gmt_payment");
+                String alipayTradeNo = params.get("trade_no");
+
+                String sign = params.get("sign");
+                String content = AlipaySignature.getSignCheckContentV1(params);
+                boolean checkSignature = AlipaySignature.rsa256CheckContent(content, sign, alipayPublicKey, "UTF-8"); // 验证签名
+                // 支付宝验签
+                if (checkSignature) {
+                    // 验签通过
+                    log.info("支付回调，交易名称: {}", params.get("subject"));
+                    log.info("支付回调，交易状态: {}", params.get("trade_status"));
+                    log.info("支付回调，支付宝交易凭证号: {}", params.get("trade_no"));
+                    log.info("支付回调，商户订单号: {}", params.get("out_trade_no"));
+                    log.info("支付回调，交易金额: {}", params.get("total_amount"));
+                    log.info("支付回调，买家在支付宝唯一id: {}", params.get("buyer_id"));
+                    log.info("支付回调，买家付款时间: {}", params.get("gmt_payment"));
+                    log.info("支付回调，买家付款金额: {}", params.get("buyer_pay_amount"));
+                    log.info("支付回调，支付回调，更新订单 {}", tradeNo);
+
+                    payOrderService.changePayOrderSuccess(tradeNo, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(gmtPayment));
+                }
+            }
+            return "success";
+        } catch (Exception e) {
+            log.error("支付回调，处理失败", e);
             return "false";
         }
-
-        Map<String, String> params = new HashMap<>();
-        Map<String, String[]> requestParams = request.getParameterMap();
-        for (String name : requestParams.keySet()) {
-            params.put(name, request.getParameter(name));
-        }
-
-        String tradeNo = params.get("out_trade_no");
-        String gmtPayment = params.get("gmt_payment");
-        String alipayTradeNo = params.get("trade_no");
-
-        String sign = params.get("sign");
-        String content = AlipaySignature.getSignCheckContentV1(params);
-        boolean checkSignature = AlipaySignature.rsa256CheckContent(content, sign, alipayPublicKey, "UTF-8"); // 验证签名
-        // 支付宝验签
-        if (!checkSignature) {
-            return "false";
-        }
-
-        // 验签通过
-        log.info("支付回调，交易名称: {}", params.get("subject"));
-        log.info("支付回调，交易状态: {}", params.get("trade_status"));
-        log.info("支付回调，支付宝交易凭证号: {}", params.get("trade_no"));
-        log.info("支付回调，商户订单号: {}", params.get("out_trade_no"));
-        log.info("支付回调，交易金额: {}", params.get("total_amount"));
-        log.info("支付回调，买家在支付宝唯一id: {}", params.get("buyer_id"));
-        log.info("支付回调，买家付款时间: {}", params.get("gmt_payment"));
-        log.info("支付回调，买家付款金额: {}", params.get("buyer_pay_amount"));
-        log.info("支付回调，支付回调，更新订单 {}", tradeNo);
-
-        return "success";
     }
-
-
 }

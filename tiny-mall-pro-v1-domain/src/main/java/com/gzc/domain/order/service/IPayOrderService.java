@@ -1,8 +1,11 @@
 package com.gzc.domain.order.service;
 
 import com.alipay.api.AlipayApiException;
-import com.gzc.domain.order.model.entity.ShopCartEntity;
 import com.gzc.domain.order.model.entity.PayOrderEntity;
+import com.gzc.domain.order.model.entity.ShopCartEntity;
+
+import java.util.Date;
+import java.util.List;
 
 public interface IPayOrderService {
 
@@ -14,5 +17,15 @@ public interface IPayOrderService {
      * @throws AlipayApiException 调用阿里API出错
      */
     PayOrderEntity createPayOrder(ShopCartEntity shopCartEntity) throws AlipayApiException;
+
+    void changePayOrderSuccess(String orderId, Date orderTime);
+
+    boolean changeOrderClose(String orderId);
+
+    List<String> queryNoPayNotifyOrder();
+
+    List<String> queryTimeoutCloseOrderList();
+
+//    String groupBuyNotify(NotifyRequestDTO notifyRequestDTO);
 
 }
