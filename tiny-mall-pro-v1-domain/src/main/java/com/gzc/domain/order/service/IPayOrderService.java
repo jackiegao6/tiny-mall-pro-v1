@@ -26,6 +26,7 @@ public interface IPayOrderService {
 
     List<String> queryTimeoutCloseOrderList();
 
-//    String groupBuyNotify(NotifyRequestDTO notifyRequestDTO);
+    void teamFinish(List<String> outTradeNoList);
+
 
 }

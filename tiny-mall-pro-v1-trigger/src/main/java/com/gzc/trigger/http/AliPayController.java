@@ -82,7 +82,7 @@ public class AliPayController {
                     params.put(name, request.getParameter(name));
                 }
 
-                String tradeNo = params.get("out_trade_no");
+                String orderId = params.get("out_trade_no");
                 String gmtPayment = params.get("gmt_payment");
                 String alipayTradeNo = params.get("trade_no");
 
@@ -100,9 +100,9 @@ public class AliPayController {
                     log.info("支付回调，买家在支付宝唯一id: {}", params.get("buyer_id"));
                     log.info("支付回调，买家付款时间: {}", params.get("gmt_payment"));
                     log.info("支付回调，买家付款金额: {}", params.get("buyer_pay_amount"));
-                    log.info("支付回调，支付回调，更新订单 {}", tradeNo);
+                    log.info("支付回调，支付回调，更新订单 {}", orderId);
 
-                    payOrderService.changeOrder2PaySuccess(tradeNo, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(gmtPayment));
+                    payOrderService.changeOrder2PaySuccess(orderId, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(gmtPayment));
                 }
             }
             return "success";

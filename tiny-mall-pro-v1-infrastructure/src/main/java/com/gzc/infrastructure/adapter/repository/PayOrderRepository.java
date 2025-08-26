@@ -1,7 +1,5 @@
 package com.gzc.infrastructure.adapter.repository;
 
-import com.alibaba.fastjson2.JSON;
-import com.google.common.eventbus.EventBus;
 import com.gzc.domain.order.adapter.repository.IPayOrderRepository;
 import com.gzc.domain.order.model.aggregate.CreateOrderAggregate;
 import com.gzc.domain.order.model.entity.OrderEntity;
@@ -25,7 +23,6 @@ import java.util.List;
 public class PayOrderRepository implements IPayOrderRepository {
 
     private final IPayOrderDao payOrderDao;
-    private final EventBus eventBus;
 
     /**
      * 根据用户id 和 商品id 查询未支付订单
@@ -115,7 +112,6 @@ public class PayOrderRepository implements IPayOrderRepository {
         payOrderReq.setPayTime(payTime);
         payOrderDao.changeOrder2PaySuccess(payOrderReq);
 
-        eventBus.post(JSON.toJSONString(payOrderReq));
     }
 
     @Override
@@ -131,5 +127,10 @@ public class PayOrderRepository implements IPayOrderRepository {
     @Override
     public boolean changeOrderClose(String orderId) {
         return payOrderDao.changeOrder2Close(orderId);
+    }
+
+    @Override
+    public void teamFinish(List<String> outTradeNoList) {
+
     }
 }

@@ -19,7 +19,6 @@ public abstract class AbstractPayOrderService implements IPayOrderService {
     protected final IPayOrderRepository payOrderRepository;
     protected final IProductPort productPort;
 
-
     @Override
     public PayOrderEntity createPayOrder(ShopCartEntity shopCartEntity) throws AlipayApiException {
 
@@ -69,20 +68,18 @@ public abstract class AbstractPayOrderService implements IPayOrderService {
         // 写入物品的理论值
         orderEntity.setDeductionPrice(marketPayDiscountEntity == null ? new BigDecimal("0") : marketPayDiscountEntity.getDeductionPrice());
         orderEntity.setCurrentPrice(marketPayDiscountEntity == null ?  productEntity.getOriginalPrice() : marketPayDiscountEntity.getCurrentPrice());
-        CreateOrderAggregate orderAggregate = CreateOrderAggregate.builder().productEntity(productEntity).orderEntity(orderEntity).build();
+        CreateOrderAggregate orderAggregate = CreateOrderAggregate.builder()
+                .productEntity(productEntity)
+                .orderEntity(orderEntity)
+                .build();
         this.doSaveOrder(orderAggregate);
         log.info("生成本地订单 订单状态在这里更新为create");
 
-        PayOrderEntity payOrderEntity = this.doPrepayOrder(userId, productId, productName, orderId,
-                productEntity.getOriginalPrice(), marketPayDiscountEntity);
-
-
-        // 订单状态在这里更新为pay_wait
-        log.info("生成支付单 userId: {} orderId: {} payUrl:\n {}", userId, orderId, payOrderEntity.getPayUrl());
+        PayOrderEntity payOrderEntity = this.doPrepayOrder(userId, productId, productName, orderId, productEntity.getOriginalPrice(), marketPayDiscountEntity);
+        log.info("生成支付单 订单状态在这里更新为pay_wait userId: {} orderId: {} payUrl:\n {}", userId, orderId, payOrderEntity.getPayUrl());
 
         return payOrderEntity;
     }
-
 
     protected abstract MarketPayDiscountEntity lockMarketPayOrder(String userId, String productId, String teamId, Long activityId, String orderId);
 

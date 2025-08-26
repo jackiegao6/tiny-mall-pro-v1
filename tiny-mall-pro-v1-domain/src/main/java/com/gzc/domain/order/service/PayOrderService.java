@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
-import com.google.common.eventbus.EventBus;
 import com.gzc.domain.order.adapter.port.IGroupBuyMarketPort;
 import com.gzc.domain.order.adapter.port.IProductPort;
 import com.gzc.domain.order.adapter.repository.IPayOrderRepository;
@@ -34,7 +33,7 @@ public class PayOrderService extends AbstractPayOrderService{
     private final AlipayClient alipayClient;
     private final IGroupBuyMarketPort groupBuyMarketPort;
 
-    public PayOrderService(IPayOrderRepository payOrderRepository, IProductPort productPort, AlipayClient alipayClient, IGroupBuyMarketPort groupBuyMarketPort, EventBus eventBus) {
+    public PayOrderService(IPayOrderRepository payOrderRepository, IProductPort productPort, AlipayClient alipayClient, IGroupBuyMarketPort groupBuyMarketPort) {
         super(payOrderRepository, productPort);
         this.alipayClient = alipayClient;
         this.groupBuyMarketPort = groupBuyMarketPort;
@@ -57,10 +56,10 @@ public class PayOrderService extends AbstractPayOrderService{
         request.setReturnUrl(returnUrl);
 
         JSONObject bizContent = new JSONObject();
-        bizContent.put("order_id", orderId);
-        bizContent.put("total_amount", totalAmount.toString());
-        bizContent.put("product_name", productName);
-        bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");
+        bizContent.put("out_trade_no", orderId);// 必传参数
+        bizContent.put("total_amount", totalAmount.toString());// 必传参数
+        bizContent.put("subject", productName);// 必传参数
+        bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");// 必传参数
         request.setBizContent(bizContent.toString());
 
         String form = alipayClient.pageExecute(request).getBody();
@@ -105,5 +104,10 @@ public class PayOrderService extends AbstractPayOrderService{
     @Override
     public boolean changeOrderClose(String orderId) {
         return payOrderRepository.changeOrderClose(orderId);
+    }
+
+    @Override
+    public void teamFinish(List<String> outTradeNoList) {
+        payOrderRepository.teamFinish(outTradeNoList);
     }
 }

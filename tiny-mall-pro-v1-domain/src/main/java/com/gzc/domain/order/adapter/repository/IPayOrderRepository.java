@@ -26,4 +26,6 @@ public interface IPayOrderRepository {
 
     boolean changeOrderClose(String orderId);
 
+    void teamFinish(List<String> outTradeNoList);
+
 }

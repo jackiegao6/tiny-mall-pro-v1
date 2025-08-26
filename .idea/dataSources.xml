@@ -14,5 +14,13 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="jdbc:mysql://192.168.31.25:13306/s-pay-mall-ddd-market?useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true&amp;zeroDateTimeBehavior=convertToNull&amp;serverTimezone=Asia/Shanghai&amp;useSSL=true" group="Debug Session Application" uuid="5f94513b-9e2c-4e35-87ab-798e1511b595">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://192.168.31.25:13306/s-pay-mall-ddd-market?useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true&amp;zeroDateTimeBehavior=convertToNull&amp;serverTimezone=Asia/Shanghai&amp;useSSL=true</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
