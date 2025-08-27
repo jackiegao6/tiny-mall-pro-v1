@@ -7,6 +7,7 @@ import com.gzc.api.dto.req.CreatePayRequestDTO;
 import com.gzc.api.response.Response;
 import com.gzc.domain.order.model.entity.PayOrderEntity;
 import com.gzc.domain.order.model.entity.ShopCartEntity;
+import com.gzc.domain.order.model.valobj.MarketTypeVO;
 import com.gzc.domain.order.service.IPayOrderService;
 import com.gzc.types.common.Constants;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,9 @@ public class AliPayController {
             PayOrderEntity payOrderEntity = payOrderService.createPayOrder(ShopCartEntity.builder()
                     .userId(userId)
                     .productId(productId)
+                    .activityId(createPayRequestDTO.getActivityId())
+                    .marketTypeVO(MarketTypeVO.valueOf(createPayRequestDTO.getMarketType()))
+                    .teamId(createPayRequestDTO.getTeamId())
                     .build());
 
             return Response.<String>builder()
@@ -57,7 +61,7 @@ public class AliPayController {
                     .data(payOrderEntity.getPayUrl())
                     .build();
         } catch (Exception e) {
-            log.error("商品下单 userId:{}购买 商品ID为productId:{}时 创建支付单失败  ", createPayRequestDTO.getUserId(), createPayRequestDTO.getUserId(), e);
+            log.error("商品下单 userId:{}购买 商品ID为productId:{}时 创建支付单失败  ", createPayRequestDTO.getUserId(), createPayRequestDTO.getProductId(), e);
             return Response.<String>builder()
                     .code(Constants.ResponseCode.UN_ERROR.getCode())
                     .info(Constants.ResponseCode.UN_ERROR.getInfo())

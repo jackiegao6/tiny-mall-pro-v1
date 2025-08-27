@@ -41,7 +41,7 @@
 
 <script src="js/index.js"></script>
 <script>
-    // 新增支付确认函数
+    // 支付确认函数
     function showPaymentConfirm(price) {
         // 创建遮罩层
         const overlay = document.createElement('div');
@@ -89,6 +89,7 @@
         document.body.appendChild(overlay);
     }
 
+    // 模糊函数
     function obfuscateUserId(userId) {
         if (userId.length <= 4) {
             // 如果 userId 的长度小于或等于 4，则无需替换任何字符
@@ -106,7 +107,7 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         // 根据测试诉求，设置基础地址
-        var sPayMallUrl = "http://127.0.0.1:8080";
+        var sPayMallUrl = "http://127.0.0.1:8090";
         var groupBuyMarketUrl = "http://127.0.0.1:8091";
         var goodsId = "9890001";
 
@@ -118,33 +119,31 @@
         }
 
         // 请求接口数据
-        fetch(groupBuyMarketUrl + '/api/v1/gbm/index/query_group_buy_market_config', {
+        fetch(groupBuyMarketUrl + '/api/v1/gbm/index/config', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 userId: userId,
-                source: "s01",
-                channel: "c01",
                 goodsId: goodsId
             })
         })
             .then(response => response.json())
             .then(res => {
-                if(res.code !== '0000') return;
+                if(res.code !== 0) return;
 
-                const { activityId, goods, teamList, teamStatistic } = res.data;
+                const { activityId, goodsInfo, teamInfos, teamStatisticInfo } = res.data;
                 const groupList = document.querySelector('.group-list');
                 const promotionText = document.querySelector('.promotion-text');
 
                 // 更新促销信息
-                promotionText.textContent = `直降 ¥${goods.deductionPrice.toFixed(0)}，${teamStatistic.allTeamUserCount}人再抢，参与马上抢到`;
+                promotionText.textContent = `直降 ¥${goodsInfo.deductionPrice.toFixed(0)}，${teamStatisticInfo.allTeamUserCount}人在抢，速速参与`;
 
                 // 清空并生成拼团列表
                 groupList.innerHTML = '';
 
-                if (teamList.length === 0) {
+                if (teamInfos.length === 0) {
                     groupList.innerHTML = `
                 <div class="group-item empty-tips">
                     <div class="tips-content">
@@ -153,20 +152,20 @@
                 </div>
             `;
                 } else {
-                    teamList.forEach(team => {
+                    teamInfos.forEach(team => {
                         const remaining = team.targetCount - team.lockCount;
 
                         groupList.innerHTML += `
                     <div class="group-item">
                         <div>
-                            <div class="user-info" data-teamId="${team.teamId}" data-activityId="${team.activityId}">${obfuscateUserId(team.userId)}</div>
+                            <div class="user-info" data-teamId="${team.teamId}" data-activityId="${activityId}">${obfuscateUserId(team.userId)}</div>
                             <div class="group-status">
                                 <span>组队仅剩${remaining}人，拼单即将结束</span>
                                 <span class="countdown">${team.validTimeCountdown}</span>
                             </div>
                         </div>
                         <div class="right">
-                            <button class="group-btn" data-price="${goods.payPrice.toFixed(0)}">参与拼团</button>
+                            <button class="group-btn" data-price="${goodsInfo.currentPrice.toFixed(0)}">参与拼团</button>
                         </div>
                     </div>
                 `;
@@ -176,14 +175,14 @@
                 // 更新底部按钮
                 const buyAloneBtn = document.querySelector('.buy-alone');
                 const groupBuyBtn = document.querySelector('.group-buy');
-                buyAloneBtn.textContent = `单独购买(￥${goods.originalPrice.toFixed(0)})`;
-                buyAloneBtn.dataset.price = goods.originalPrice;
-                groupBuyBtn.textContent = `开团购买(￥${goods.payPrice.toFixed(0)})`;
-                groupBuyBtn.dataset.price = goods.payPrice;
+                buyAloneBtn.textContent = `单独购买(￥${goodsInfo.originalPrice.toFixed(0)})`;
+                buyAloneBtn.dataset.price = goodsInfo.originalPrice;
+                groupBuyBtn.textContent = `开团购买(￥${goodsInfo.currentPrice.toFixed(0)})`;
+                groupBuyBtn.dataset.price = goodsInfo.currentPrice;
 
                 // 绑定支付事件[拼团购买]
                 document.querySelectorAll('.group-btn, .group-buy').forEach(btn => {
-                    btn.addEventListener('click', function() {
+                    btn.addEventListener('click', function () {
                         const button = this;
                         const price = button.dataset.price;
 
@@ -199,7 +198,7 @@
 
                         var requestBody = {
                             userId: userId,
-                            productId: goods.goodsId,
+                            productId: goodsInfo.goodsId,
                             teamId: teamId,
                             activityId: activityId,
                             marketType: 1
@@ -214,10 +213,10 @@
                         })
                             .then(response => response.json()) // 解析JSON格式的响应
                             .then(json => {
-                                if (json.code === "0000") { // 假设成功的code是"0000"
+                                if (json.code === "0000") { // 注意支付商城成功的code是"0000" 拼团商城成功的code是 0
                                     document.querySelectorAll('form').forEach(form => form.remove());
                                     document.body.insertAdjacentHTML('beforeend', json.data);
-                                    showPaymentConfirm(goods.payPrice);
+                                    showPaymentConfirm(goodsInfo.currentPrice);
                                 } else {
                                     console.error('Error:', json.info); // 输出错误信息
                                 }
@@ -235,7 +234,7 @@
 
                         var requestBody = {
                             userId: userId,
-                            productId: goods.goodsId,
+                            productId: goodsInfo.goodsId,
                             marketType: 0
                         };
 
@@ -251,7 +250,7 @@
                                 if (json.code === "0000") { // 假设成功的code是"0000"
                                     document.querySelectorAll('form').forEach(form => form.remove());
                                     document.body.insertAdjacentHTML('beforeend', json.data);
-                                    showPaymentConfirm(goods.payPrice);
+                                    showPaymentConfirm(goodsInfo.currentPrice);
                                 } else {
                                     console.error('Error:', json.info); // 输出错误信息
                                 }

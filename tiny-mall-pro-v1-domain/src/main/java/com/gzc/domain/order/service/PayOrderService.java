@@ -9,7 +9,7 @@ import com.gzc.domain.order.adapter.port.IGroupBuyMarketPort;
 import com.gzc.domain.order.adapter.port.IProductPort;
 import com.gzc.domain.order.adapter.repository.IPayOrderRepository;
 import com.gzc.domain.order.model.aggregate.CreateOrderAggregate;
-import com.gzc.domain.order.model.entity.MarketPayDiscountEntity;
+import com.gzc.domain.order.model.entity.LockOrderAfterEntity;
 import com.gzc.domain.order.model.entity.OrderEntity;
 import com.gzc.domain.order.model.entity.PayOrderEntity;
 import com.gzc.domain.order.model.valobj.MarketTypeVO;
@@ -45,7 +45,7 @@ public class PayOrderService extends AbstractPayOrderService{
     }
 
     @Override
-    protected MarketPayDiscountEntity lockMarketPayOrder(String userId, String productId, String teamId, Long activityId, String orderId) {
+    protected LockOrderAfterEntity lockMarketPayOrder(String userId, String productId, String teamId, Long activityId, String orderId) {
         return groupBuyMarketPort.lockOrder(userId, productId, teamId, activityId, orderId);
     }
 
@@ -75,8 +75,8 @@ public class PayOrderService extends AbstractPayOrderService{
     }
 
     @Override
-    protected PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId, BigDecimal totalAmount, MarketPayDiscountEntity marketPayDiscountEntity) throws AlipayApiException {
-        totalAmount = marketPayDiscountEntity == null ? totalAmount : marketPayDiscountEntity.getCurrentPrice();
+    protected PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId, BigDecimal totalAmount, LockOrderAfterEntity lockOrderAfterEntity) throws AlipayApiException {
+        totalAmount = lockOrderAfterEntity == null ? totalAmount : lockOrderAfterEntity.getCurrentPrice();
         return doPrepayOrder(userId, productId, productName, orderId, totalAmount);
     }
 

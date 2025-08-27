@@ -2,7 +2,7 @@ package com.gzc.infrastructure.adapter.port;
 
 import com.gzc.api.response.Response;
 import com.gzc.domain.order.adapter.port.IGroupBuyMarketPort;
-import com.gzc.domain.order.model.entity.MarketPayDiscountEntity;
+import com.gzc.domain.order.model.entity.LockOrderAfterEntity;
 import com.gzc.infrastructure.gateway.IGroupBuyMarketApiService;
 import com.gzc.infrastructure.gateway.dto.req.LockMarketPayOrderRequestDTO;
 import com.gzc.infrastructure.gateway.dto.req.SettlementRequestDTO;
@@ -31,7 +31,7 @@ public class GroupBuyMarketPort implements IGroupBuyMarketPort {
     private final IGroupBuyMarketApiService groupBuyMarketApiService;
 
     @Override
-    public MarketPayDiscountEntity lockOrder(String userId, String productId, String teamId, Long activityId, String orderId) {
+    public LockOrderAfterEntity lockOrder(String userId, String productId, String teamId, Long activityId, String orderId) {
         LockMarketPayOrderRequestDTO requestDTO = LockMarketPayOrderRequestDTO.builder()
                 .userId(userId)
                 .goodsId(productId)
@@ -51,7 +51,7 @@ public class GroupBuyMarketPort implements IGroupBuyMarketPort {
 
             LockMarketPayOrderResponseDTO lockMarketPayOrderResponseDTO = response.getData();
 
-            return MarketPayDiscountEntity.builder()
+            return LockOrderAfterEntity.builder()
                     .originalPrice(lockMarketPayOrderResponseDTO.getOriginalPrice())
                     .deductionPrice(lockMarketPayOrderResponseDTO.getDeductionPrice())
                     .currentPrice(lockMarketPayOrderResponseDTO.getCurrentPrice())

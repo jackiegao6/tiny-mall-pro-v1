@@ -12,6 +12,6 @@ public class CreatePayRequestDTO {
 
     private String teamId;
     private Long activityId;
-    private Integer marketType = 0;
+    private Integer marketType;
 
 }

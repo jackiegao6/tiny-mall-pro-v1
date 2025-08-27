@@ -41,11 +41,11 @@ public abstract class AbstractPayOrderService implements IPayOrderService {
             log.info("存在掉单订单 userId:{} productId:{} orderId:{}", userId, productId, unpaidOrderEntity.getOrderId());
 
             // 营销锁单
-            MarketPayDiscountEntity marketPayDiscountEntity = null;
+            LockOrderAfterEntity lockOrderAfterEntity = null;
             if (MarketTypeVO.GROUP_BUY_MARKET.equals(marketTypeVO)) {
-                marketPayDiscountEntity = this.lockMarketPayOrder(userId, productId, teamId, activityId, unpaidOrderEntity.getOrderId());
+                lockOrderAfterEntity = this.lockMarketPayOrder(userId, productId, teamId, activityId, unpaidOrderEntity.getOrderId());
             }
-            PayOrderEntity payOrderEntity = doPrepayOrder(userId, productId, unpaidOrderEntity.getProductName(), unpaidOrderEntity.getOrderId(), unpaidOrderEntity.getTotalAmount(), marketPayDiscountEntity);
+            PayOrderEntity payOrderEntity = doPrepayOrder(userId, productId, unpaidOrderEntity.getProductName(), unpaidOrderEntity.getOrderId(), unpaidOrderEntity.getTotalAmount(), lockOrderAfterEntity);
 
             return PayOrderEntity.builder()
                     .orderId(payOrderEntity.getOrderId())
@@ -60,14 +60,14 @@ public abstract class AbstractPayOrderService implements IPayOrderService {
         String orderId = orderEntity.getOrderId();
 
         // 营销锁单
-        MarketPayDiscountEntity marketPayDiscountEntity = null;
+        LockOrderAfterEntity lockOrderAfterEntity = null;
         if (MarketTypeVO.GROUP_BUY_MARKET.equals(marketTypeVO)) {
-            marketPayDiscountEntity = this.lockMarketPayOrder(userId, productId, teamId, activityId, orderId);
+            lockOrderAfterEntity = this.lockMarketPayOrder(userId, productId, teamId, activityId, orderId);
         }
 
         // 写入物品的理论值
-        orderEntity.setDeductionPrice(marketPayDiscountEntity == null ? new BigDecimal("0") : marketPayDiscountEntity.getDeductionPrice());
-        orderEntity.setCurrentPrice(marketPayDiscountEntity == null ?  productEntity.getOriginalPrice() : marketPayDiscountEntity.getCurrentPrice());
+        orderEntity.setDeductionPrice(lockOrderAfterEntity == null ? new BigDecimal("0") : lockOrderAfterEntity.getDeductionPrice());
+        orderEntity.setCurrentPrice(lockOrderAfterEntity == null ?  productEntity.getOriginalPrice() : lockOrderAfterEntity.getCurrentPrice());
         CreateOrderAggregate orderAggregate = CreateOrderAggregate.builder()
                 .productEntity(productEntity)
                 .orderEntity(orderEntity)
@@ -75,19 +75,19 @@ public abstract class AbstractPayOrderService implements IPayOrderService {
         this.doSaveOrder(orderAggregate);
         log.info("生成本地订单 订单状态在这里更新为create");
 
-        PayOrderEntity payOrderEntity = this.doPrepayOrder(userId, productId, productName, orderId, productEntity.getOriginalPrice(), marketPayDiscountEntity);
+        PayOrderEntity payOrderEntity = this.doPrepayOrder(userId, productId, productName, orderId, productEntity.getOriginalPrice(), lockOrderAfterEntity);
         log.info("生成支付单 订单状态在这里更新为pay_wait userId: {} orderId: {} payUrl:\n {}", userId, orderId, payOrderEntity.getPayUrl());
 
         return payOrderEntity;
     }
 
-    protected abstract MarketPayDiscountEntity lockMarketPayOrder(String userId, String productId, String teamId, Long activityId, String orderId);
+    protected abstract LockOrderAfterEntity lockMarketPayOrder(String userId, String productId, String teamId, Long activityId, String orderId);
 
     protected abstract void doSaveOrder(CreateOrderAggregate orderAggregate);
 
     protected abstract PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId, BigDecimal totalAmount) throws AlipayApiException;
 
-    protected abstract PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId, BigDecimal totalAmount, MarketPayDiscountEntity marketPayDiscountEntity) throws AlipayApiException;
+    protected abstract PayOrderEntity doPrepayOrder(String userId, String productId, String productName, String orderId, BigDecimal totalAmount, LockOrderAfterEntity lockOrderAfterEntity) throws AlipayApiException;
 
 
 }
