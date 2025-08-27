@@ -250,7 +250,7 @@
                                 if (json.code === "0000") { // 假设成功的code是"0000"
                                     document.querySelectorAll('form').forEach(form => form.remove());
                                     document.body.insertAdjacentHTML('beforeend', json.data);
-                                    showPaymentConfirm(goodsInfo.currentPrice);
+                                    showPaymentConfirm(goodsInfo.originalPrice);
                                 } else {
                                     console.error('Error:', json.info); // 输出错误信息
                                 }
