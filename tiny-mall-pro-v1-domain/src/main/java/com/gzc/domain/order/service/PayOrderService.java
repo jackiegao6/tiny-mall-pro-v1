@@ -107,7 +107,7 @@ public class PayOrderService extends AbstractPayOrderService{
     }
 
     @Override
-    public void changeOrder2DealDone(List<String> outTradeNoList) {
-        payOrderRepository.changeOrder2DealDone(outTradeNoList);
+    public void changeOrderList2DealDone(List<String> outTradeNoList) {
+        payOrderRepository.changeOrderList2DealDone(outTradeNoList);
     }
 }

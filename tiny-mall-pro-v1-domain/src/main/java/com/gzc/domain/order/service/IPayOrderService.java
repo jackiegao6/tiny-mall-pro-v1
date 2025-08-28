@@ -20,7 +20,7 @@ public interface IPayOrderService {
 
     void changeOrder2PaySuccess(String orderId, Date payTime);
 
-    void changeOrder2DealDone(List<String> outTradeNoList);
+    void changeOrderList2DealDone(List<String> outTradeNoList);
 
     boolean changeOrderClose(String orderId);
 
