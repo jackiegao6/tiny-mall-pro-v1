@@ -3,6 +3,7 @@ package com.gzc.trigger.listener;
 
 import com.alibaba.fastjson2.JSON;
 import com.gzc.api.dto.req.TeamFinishNotifyRequestDTO;
+import com.gzc.domain.goods.service.IGoodsService;
 import com.gzc.domain.order.service.IPayOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -22,6 +23,9 @@ public class TeamSuccessTopicListener {
     @Resource
     private IPayOrderService orderService;
 
+    @Resource
+    private IGoodsService goodsService;
+
     @RabbitListener(
             bindings = @QueueBinding(
                     value = @Queue(value = "${spring.rabbitmq.config.consumer.topic_team_success.queue}"),
@@ -36,7 +40,7 @@ public class TeamSuccessTopicListener {
             List<String> outTradeNoList = teamFinishNotifyRequestDTO.getOutTradeNoList();
             log.info("mq: 接收到组队状态完结的信息 teamId: {} orderIds: {}", teamId, outTradeNoList);
             // 之后把这些订单都更新为Deal_Done状态
-            orderService.changeOrderList2DealDone(teamFinishNotifyRequestDTO.getOutTradeNoList());
+            orderService.changeOrderList2DealDone(outTradeNoList);
 
         } catch (Exception e) {
             log.error("拼团回调，组队完成，结算失败 {}", msg, e);

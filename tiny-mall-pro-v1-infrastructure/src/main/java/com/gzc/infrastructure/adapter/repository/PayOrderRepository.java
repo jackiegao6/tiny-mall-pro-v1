@@ -8,6 +8,7 @@ import com.gzc.domain.order.model.entity.OrderEntity;
 import com.gzc.domain.order.model.entity.PayOrderEntity;
 import com.gzc.domain.order.model.entity.ProductEntity;
 import com.gzc.domain.order.model.entity.ShopCartEntity;
+import com.gzc.domain.order.model.valobj.MarketTypeVO;
 import com.gzc.domain.order.model.valobj.OrderStatusVO;
 import com.gzc.infrastructure.dao.IPayOrderDao;
 import com.gzc.infrastructure.dao.po.PayOrder;
@@ -112,20 +113,21 @@ public class PayOrderRepository implements IPayOrderRepository {
      * 接收回调消息，变更数据库状态，之后发送MQ消息
      */
     @Override
-    public void changeOrder2PaySuccess(String orderId, Date payTime) {
+    public void changeOrder2PaySuccess(String orderId, Date payTime, MarketTypeVO marketTypeVO) {
         PayOrder payOrderReq = new PayOrder();
         payOrderReq.setOrderId(orderId);
         payOrderReq.setPayTime(payTime);
         payOrderDao.changeOrder2PaySuccess(payOrderReq);
 
-        // 不走拼团营销的直接结算发货
-        // 1. 构建BaseEvent 中的data属性对象
-        OrderPaySuccessMessageEvent.OrderPaySuccessMessage paySuccessMessage  = OrderPaySuccessMessageEvent.OrderPaySuccessMessage.builder()
-                .orderId(orderId)
-                .build();
-        // 2. 进一步包装BaseEvent 此时不仅有data属性 还有 id和时间戳
-        BaseEvent.EventMessage<OrderPaySuccessMessageEvent.OrderPaySuccessMessage> paySuccessMessageEvent  = orderPaySuccessMessageEvent.getEventMessage(paySuccessMessage);
-        eventPublisher.publishOrderPaySuccessMessage(orderPaySuccessMessageEvent.getTopic(), JSON.toJSONString(paySuccessMessageEvent));
+        if (MarketTypeVO.NORMAL.equals(marketTypeVO)){
+            // 1. 构建BaseEvent 中的data属性对象
+            OrderPaySuccessMessageEvent.OrderPaySuccessMessage paySuccessMessage  = OrderPaySuccessMessageEvent.OrderPaySuccessMessage.builder()
+                    .orderId(orderId)
+                    .build();
+            // 2. 进一步包装BaseEvent 此时不仅有data属性 还有 id和时间戳
+            BaseEvent.EventMessage<OrderPaySuccessMessageEvent.OrderPaySuccessMessage> paySuccessMessageEvent  = orderPaySuccessMessageEvent.getEventMessage(paySuccessMessage);
+            eventPublisher.publishOrderPaySuccessMessage(orderPaySuccessMessageEvent.getTopic(), JSON.toJSONString(paySuccessMessageEvent));
+        }
     }
 
     @Override
@@ -144,9 +146,18 @@ public class PayOrderRepository implements IPayOrderRepository {
     }
 
     @Override
-    public void changeOrderList2DealDone(List<String> outTradeNoList) {
+    public void changeOrderList2DealDone(List<String> orderIds) {
         // 更新拼团结算状态
-        payOrderDao.changeOrderList2DealDone(outTradeNoList);
+        payOrderDao.changeOrderList2DealDone(orderIds);
+        orderIds.forEach(orderId -> {
+            OrderPaySuccessMessageEvent.OrderPaySuccessMessage paySuccessMessage  = OrderPaySuccessMessageEvent.OrderPaySuccessMessage.builder()
+                    .orderId(orderId)
+                    .build();
+            BaseEvent.EventMessage<OrderPaySuccessMessageEvent.OrderPaySuccessMessage> paySuccessMessageEvent  = orderPaySuccessMessageEvent.getEventMessage(paySuccessMessage);
+            eventPublisher.publishOrderPaySuccessMessage(orderPaySuccessMessageEvent.getTopic(), JSON.toJSONString(paySuccessMessageEvent));
+
+        });
+
 
     }
 }

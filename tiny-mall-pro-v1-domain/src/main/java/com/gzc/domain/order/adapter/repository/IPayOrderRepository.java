@@ -4,6 +4,7 @@ import com.gzc.domain.order.model.aggregate.CreateOrderAggregate;
 import com.gzc.domain.order.model.entity.OrderEntity;
 import com.gzc.domain.order.model.entity.ShopCartEntity;
 import com.gzc.domain.order.model.entity.PayOrderEntity;
+import com.gzc.domain.order.model.valobj.MarketTypeVO;
 
 import java.util.Date;
 import java.util.List;
@@ -18,7 +19,7 @@ public interface IPayOrderRepository {
 
     void updateOrderPayInfo(PayOrderEntity payOrderEntity);
 
-    void changeOrder2PaySuccess(String orderId, Date orderTime);
+    void changeOrder2PaySuccess(String orderId, Date orderTime, MarketTypeVO marketTypeVO);
 
     List<String> queryNoPayNotifyOrder();
 

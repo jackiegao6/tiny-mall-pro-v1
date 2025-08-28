@@ -7,6 +7,7 @@ app:
     cross-origin: '*'
     group-buy-market:
       api-url: http://127.0.0.1:8091
+      notify-http-open: false
       notify-url: http://127.0.0.1:8090/api/v1/pay-mall/settlement
     weixin:
       api-url: https://api.weixin.qq.com
@@ -52,16 +53,23 @@ spring:
         prefetch: 1 # 每次投递n个消息，消费完在投递n个
     template:
       delivery-mode: persistent # 确保全局默认设置为持久化（可选）
-    # 消息配置
     config:
+      producer:
+        topic_order_pay_success:
+          exchange: s_pay_mall_exchange
+          routing_key: topic.order_pay_success
+          queue: s_pay_mall_queue_2_order_pay_success
+
       consumer:
         topic_team_success:
-          # 绑定交换机 - 消息提供者的交换机
           exchange: group_buy_market_exchange
-          # 消息主题
           routing_key: topic.team_success
-          # 消费队列 - 每个系统有自己的消费队列
           queue: s_pay_mall_queue_2_topic_team_success
+        topic_order_pay_success:
+          exchange: s_pay_mall_exchange
+          routing_key: topic.order_pay_success
+          queue: s_pay_mall_queue_2_order_pay_success
+
 
 mybatis:
   mapper-locations: classpath:/mybatis/mapper/*.xml
@@ -77,7 +85,7 @@ weixin:
     app-secret: acee42440c5432ca93bbc1807337780c
     template:
       template-id: JY2vnuKYYsJQV283j3S9e8JXCoZmgnow6IEm2rMqnZE
-      template-notify-url: http://7d7a91e3.r32.cpolar.top/api/v1/weixin/template/send-notify
+      template-notify-url: http://7e16413b.r32.cpolar.top/api/v1/weixin/template/send-notify
 
 
 # 支付宝支付 - 沙箱 https://opendocs.alipay.com/common/02kkv7
@@ -90,7 +98,7 @@ alipay:
   # 支付宝公钥
   alipay_public_key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu+q0f+zJ33m+TyN8GXI18wwaxY325Wl6iXA6/eizuj0DL+t81Nu7hou621a1/BVKq55SP3CPnrpu/r9YP7sMunxQRg9FDKddrVfUcz6OLsO96diNzSn9/OpPC9ibX34Q1YNoFAowNo5AnaVmULnnds+rarTX4g1lYrq/lsTmns9uBXZvS0/THsWFbIEnFJi2Mdnbp+9tes2KrTm1tZwsCZo+1zKPRyXafx1pSgIAd2AH3lPSyhFaSSIyPzO8eT1A3bGltpH8TFmqpCVd6xaeO3FLsjRNg9zQ0CQKd8DI06PPIajWmHZ1Z+Qh0vVe4xAAhGGnxxZssaYT9OMuyVomZwIDAQAB
   # 内网穿透 服务器异步通知回调地址，也就是用户支付完成后，支付宝调用开发者的地址
-  notify_url: http://7d7a91e3.r32.cpolar.top/api/v1/alipay/alipay_notify_url
+  notify_url: http://7e16413b.r32.cpolar.top/api/v1/alipay/alipay_notify_url
   # 内网穿透 用户支付完成后跳转的地址
   return_url: https://baidu.com
   # 固定的 支付宝沙箱环境的地址
