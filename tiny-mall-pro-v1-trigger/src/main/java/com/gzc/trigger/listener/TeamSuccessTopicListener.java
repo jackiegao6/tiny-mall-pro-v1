@@ -35,8 +35,9 @@ public class TeamSuccessTopicListener {
             String teamId = teamFinishNotifyRequestDTO.getTeamId();
             List<String> outTradeNoList = teamFinishNotifyRequestDTO.getOutTradeNoList();
             log.info("mq: 接收到组队状态完结的信息 teamId: {} orderIds: {}", teamId, outTradeNoList);
-            orderService.changeOrder2DealDone(teamFinishNotifyRequestDTO.getOutTradeNoList());
             // 之后把这些订单都更新为Deal_Done状态
+            orderService.changeOrderList2DealDone(teamFinishNotifyRequestDTO.getOutTradeNoList());
+
         } catch (Exception e) {
             log.error("拼团回调，组队完成，结算失败 {}", msg, e);
             throw new RuntimeException(e);
