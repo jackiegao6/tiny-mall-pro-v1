@@ -20,13 +20,12 @@ public interface IPayOrderService {
 
     void changeOrder2PaySuccess(String orderId, Date payTime);
 
+    void changeOrder2DealDone(List<String> outTradeNoList);
+
     boolean changeOrderClose(String orderId);
 
     List<String> queryNoPayNotifyOrder();
 
     List<String> queryTimeoutCloseOrderList();
-
-    void teamFinish(List<String> outTradeNoList);
-
 
 }

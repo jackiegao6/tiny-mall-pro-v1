@@ -25,7 +25,7 @@ public interface IPayOrderDao {
 
     boolean changeOrder2Close(String orderId);
 
-    void changeOrderMarketSettlement(@Param("outTradeNoList") List<String> outTradeNoList);
+    void changeOrderList2DealDone(@Param("outTradeNoList") List<String> outTradeNoList);
 
     void changeOrder2DealDone(String orderId);
 

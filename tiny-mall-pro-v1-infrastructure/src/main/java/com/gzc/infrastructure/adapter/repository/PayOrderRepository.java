@@ -1,5 +1,7 @@
 package com.gzc.infrastructure.adapter.repository;
 
+import com.alibaba.fastjson2.JSON;
+import com.gzc.domain.order.adapter.event.OrderPaySuccessMessageEvent;
 import com.gzc.domain.order.adapter.repository.IPayOrderRepository;
 import com.gzc.domain.order.model.aggregate.CreateOrderAggregate;
 import com.gzc.domain.order.model.entity.OrderEntity;
@@ -9,6 +11,8 @@ import com.gzc.domain.order.model.entity.ShopCartEntity;
 import com.gzc.domain.order.model.valobj.OrderStatusVO;
 import com.gzc.infrastructure.dao.IPayOrderDao;
 import com.gzc.infrastructure.dao.po.PayOrder;
+import com.gzc.infrastructure.event.EventPublisher;
+import com.gzc.types.event.BaseEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -23,6 +27,8 @@ import java.util.List;
 public class PayOrderRepository implements IPayOrderRepository {
 
     private final IPayOrderDao payOrderDao;
+    private final EventPublisher eventPublisher;
+    private final OrderPaySuccessMessageEvent orderPaySuccessMessageEvent;
 
     /**
      * 根据用户id 和 商品id 查询未支付订单
@@ -112,6 +118,14 @@ public class PayOrderRepository implements IPayOrderRepository {
         payOrderReq.setPayTime(payTime);
         payOrderDao.changeOrder2PaySuccess(payOrderReq);
 
+        // 不走拼团营销的直接结算发货
+        // 1. 构建BaseEvent 中的data属性对象
+        OrderPaySuccessMessageEvent.OrderPaySuccessMessage paySuccessMessage  = OrderPaySuccessMessageEvent.OrderPaySuccessMessage.builder()
+                .orderId(orderId)
+                .build();
+        // 2. 进一步包装BaseEvent 此时不仅有data属性 还有 id和时间戳
+        BaseEvent.EventMessage<OrderPaySuccessMessageEvent.OrderPaySuccessMessage> paySuccessMessageEvent  = orderPaySuccessMessageEvent.getEventMessage(paySuccessMessage);
+        eventPublisher.publishOrderPaySuccessMessage(orderPaySuccessMessageEvent.getTopic(), JSON.toJSONString(paySuccessMessageEvent));
     }
 
     @Override
@@ -130,7 +144,9 @@ public class PayOrderRepository implements IPayOrderRepository {
     }
 
     @Override
-    public void teamFinish(List<String> outTradeNoList) {
+    public void changeOrderList2DealDone(List<String> outTradeNoList) {
+        // 更新拼团结算状态
+        payOrderDao.changeOrderList2DealDone(outTradeNoList);
 
     }
 }
